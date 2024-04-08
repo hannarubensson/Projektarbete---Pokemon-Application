@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Krona+One&display=swap'); 
+
+body {
+    font-family: "Krona One";
+    background: rgb(255,239,239);
+    background: linear-gradient(180deg, rgba(255,239,239,1) 0%, rgba(255,0,199,1) 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+.selection-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 25px; 
+}
+
+#select-fighter {
+    border-radius: 10px;
+    padding: 12px;
+    font-family: "Krona One";
+    border: 2px solid rgba(255,0,199,1); 
+}
+
+#fighter-one {
+    border-radius: 10px;
+    padding: 12px;
+    font-family: "Krona One";
+    border: 2px solid rgba(255,0,199,1); 
+}
+
+#fighter-two {
+    border-radius: 10px;
+    padding: 12px;
+    font-family: "Krona One";
+    border: 2px solid rgba(255,0,199,1); 
+}
+
+
+.fighter-wrapper {
+    border-radius: 45px;
+    border: 3px solid  rgba(255,0,199,1); 
+    background-color: #FFEDED;
+    width: 100%;
+    height: auto; 
+    display: flex;
+    justify-content: center;
+    gap: 50px; 
+    padding: 40px; 
+}
+
+#character-info-card {
+    border: 3px solid  rgba(255,0,199,1); 
+    border-radius: 10px;
+    text-align: center;
+    padding: 12px; 
+
+}
