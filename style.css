@@ -23,19 +23,26 @@ h2 {
 }
 
 #select-fighter {
+    background-color: white;
     border-radius: 10px;
     padding: 12px;
     font-family: "Krona One";
     border: 2px solid rgba(255,0,199,1); 
 }
 
+#select-fighter:hover {
+    background-color: rgba(255,0,199,1); 
+    color: white; 
+}
+
+ /* DROPDOWN-LIST ONE */ 
 #fighter-one {
     border-radius: 10px;
     padding: 12px;
     font-family: "Krona One";
     border: 2px solid rgba(255,0,199,1); 
 }
-
+ /* DROPDOWN-LIST TWO*/ 
 #fighter-two {
     border-radius: 10px;
     padding: 12px;
@@ -48,10 +55,10 @@ h2 {
     border-radius: 45px;
     border: 3px solid  rgba(255,0,199,1); 
     background-color: #FFEDED;
-    width: 100%;
-    height: auto; 
+    height: 80%; 
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 50px; 
     padding: 40px; 
 }
@@ -61,5 +68,31 @@ h2 {
     border-radius: 10px;
     text-align: center;
     padding: 12px; 
+    background-color: #ffd8d8;
 
+}
+
+
+/* BUTTONS */ 
+
+#compare-pokemon-button {
+    border-radius: 10px;
+    height: 60%; 
+    padding: 12px; 
+    font-family: "Krona One";
+    border: 2px solid rgba(255,0,199,1); 
+    background-color: white;
+
+}
+
+#compare-pokemon-button:hover {
+    background-color: rgba(255,0,199,1); 
+    color: white; 
+}
+
+
+#button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
