@@ -1,4 +1,5 @@
 class PokemonCharacter {
+
     constructor(name, pic, types, weight, height, stats) {
         this.name = name;
         this.pic = pic; 
@@ -86,6 +87,50 @@ class CreateCharacter {
     }
 
 
+    static renderStats(poke) {
+
+        const wrapper = document.getElementById("fighter-wrapper");
+        const statsDiv = document.createElement("div"); 
+
+        // HITTA ALLA STATS I OBJEKTET I API:ET
+        
+        statsDiv.innerHTML = `
+        <h3>${poke.name}'s stats:</h3>
+        <h3>HP: ${poke.stats.find(stat => stat.stat.name === "hp").base_stat}</h3>
+        <h3>Attack: ${poke.stats.find(stat => stat.stat.name === "attack").base_stat}</h3>
+        <h3>Defense: ${poke.stats.find(stat => stat.stat.name === "defense").base_stat}</h3>
+        <h3>Special attack: ${poke.stats.find(stat => stat.stat.name === "special-attack").base_stat}</h3>
+        <h3>Special defense: ${poke.stats.find(stat => stat.stat.name === "special-defense").base_stat}</h3>
+        <h3>Speed: ${poke.stats.find(stat => stat.stat.name === "speed").base_stat}</h3>
+    `;
+        wrapper.append(statsDiv);
+
+        return statsDiv; 
+    }
+
+    static compareStats(property, results, poke) {
+
+        const wrapper = document.getElementById("compare-wrapper");
+        const compareDiv = document.createElement("div"); 
+
+        let color = "";
+
+        // STYLING FOR WINNER/LOSER/TIE
+        if (poke === null) {
+            color = "tie";
+        } else if (poke === this.poke1) {
+            color = "poke1";
+        } else {
+            color = "poke2"; 
+        }
+
+        compareDiv.innerHTML = `
+        <h3 class="${color}">${property}: ${results}<br></h3>
+        `
+        wrapper.append(compareDiv);
+
+        return compareDiv; 
+    }
 
 }
 class Interaction {
@@ -95,36 +140,47 @@ class Interaction {
         this.poke2 = poke2; 
     }
 
-    getStats(poke1, poke2) {
+    async getStats() {
 
-        const stats = {};
-    
-        poke1.stats.forEach(stat => {
-            stats[stat.stat.name] = stat.base_stat;
-        });
+        const poke1Stats = {
+            height: this.poke1.height,
+            weight: this.poke1.weight
+        };
+        const poke2Stats = {
+            height: this.poke2.height,
+            weight: this.poke2.weight
+        };
 
-        poke2.stats.forEach(stat => {
-            stats[stat.stat.name] = stat.base_stat;
+        this.poke1.stats.forEach(stat => {
+            poke1Stats[stat.stat.name] = stat.base_stat;
         });
     
-            return stats;
-        
+        this.poke2.stats.forEach(stat => {
+            poke2Stats[stat.stat.name] = stat.base_stat;
+        });
+    
+        return [poke1Stats, poke2Stats];
     }
 
-    compareCharacters(poke1, poke2) {
+    async compareCharacters() {
+        const [poke1Stats, poke2Stats] = await this.getStats();
+    
+        // COMPARE POKEMONS
+        const properties = ["weight", "height", "hp", "attack", "defense", "special-attack", "special-defense", "speed"];
+    
+        properties.forEach(property => {
+            if (poke1Stats[property] > poke2Stats[property]) {
+                CreateCharacter.compareStats(property, `${this.poke1.name} has higher ${property}`, poke1Stats);
 
-        poke1 = this.poke1;
-        poke2 = this.poke2;
-
-        const poke1Stats = this.getStats(poke1);
-        const poke2Stats = this.getStats(poke2);
-
-        console.log(`${poke1.name} stats:`, poke1Stats);
-        console.log(`${poke2.name} stats:`, poke2Stats);
-
-        // Hitpoints, attack, special attack, defense, special defense, speed
-
+            } else if (poke1Stats[property] < poke2Stats[property]) {
+                CreateCharacter.compareStats(property, `${this.poke2.name} has higher ${property}`, poke2Stats);
+                
+            } else {
+                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, null);
+            }
+        });
     }
+
 
     fight(poke1, poke2) {
 
@@ -164,19 +220,26 @@ selectFighterBtn.addEventListener("click", async () => {
 
     let compareBtn = document.getElementById("compare-pokemon-button"); 
 
-    // BUTTON FOR COMPARING POKEMONS
-    compareBtn.addEventListener("click", () => {
+    // BUTTON FOR COMPARING POKEMONS -----------------------------------
+    compareBtn.addEventListener("click", async () => {
 
         console.log("klickat!");
     
-        let poke1 = document.getElementById("fighter-one").value;
-        let poke2 = document.getElementById("fighter-two").value;
+        try {
+            const [pokemon1, pokemon2] = await Promise.all([
+                PokemonCharacter.fetchPokeData(url1),
+                PokemonCharacter.fetchPokeData(url2)
+            ]);
+    
+            const interaction = new Interaction(pokemon1, pokemon2);
+            await interaction.compareCharacters();
+            CreateCharacter.compareStats(pokemon1);
+            CreateCharacter.compareStats(pokemon2); 
 
-        const interaction = new Interaction(poke1, poke2);
-        interaction.compareCharacters(poke1, poke2); 
-
-
-});
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
 
 
 });

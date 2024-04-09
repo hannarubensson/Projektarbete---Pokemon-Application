@@ -96,3 +96,18 @@ h2 {
     justify-content: center;
     align-items: center;
 }
+
+
+/* STYLING FOR WINNER / LOSER / TIE */ 
+
+.poke1 {
+    color: rgba(255,0,199,1); 
+}
+
+.poke2 {
+    color: rgb(255, 96, 231); 
+}
+
+.tie {
+    color: peachpuff; 
+}
