@@ -28,6 +28,7 @@ class PokemonCharacter {
 
 class CreateCharacter {
 
+
     static createCharacterDiv(character) {
 
         const { name, sprites, types, weight, height, stats } = character;
@@ -86,29 +87,7 @@ class CreateCharacter {
         
     }
 
-
-    static renderStats(poke) {
-
-        const wrapper = document.getElementById("fighter-wrapper");
-        const statsDiv = document.createElement("div"); 
-
-        // HITTA ALLA STATS I OBJEKTET I API:ET
-        
-        statsDiv.innerHTML = `
-        <h3>${poke.name}'s stats:</h3>
-        <h3>HP: ${poke.stats.find(stat => stat.stat.name === "hp").base_stat}</h3>
-        <h3>Attack: ${poke.stats.find(stat => stat.stat.name === "attack").base_stat}</h3>
-        <h3>Defense: ${poke.stats.find(stat => stat.stat.name === "defense").base_stat}</h3>
-        <h3>Special attack: ${poke.stats.find(stat => stat.stat.name === "special-attack").base_stat}</h3>
-        <h3>Special defense: ${poke.stats.find(stat => stat.stat.name === "special-defense").base_stat}</h3>
-        <h3>Speed: ${poke.stats.find(stat => stat.stat.name === "speed").base_stat}</h3>
-    `;
-        wrapper.append(statsDiv);
-
-        return statsDiv; 
-    }
-
-    static compareStats(property, results, poke) {
+    static compareStats(property, results, winner) {
 
         const wrapper = document.getElementById("compare-wrapper");
         const compareDiv = document.createElement("div"); 
@@ -116,12 +95,20 @@ class CreateCharacter {
         let color = "";
 
         // STYLING FOR WINNER/LOSER/TIE
-        if (poke === null) {
-            color = "tie";
-        } else if (poke === this.poke1) {
-            color = "poke1";
-        } else {
-            color = "poke2"; 
+
+        switch(winner.name) {
+            case null:
+                color = "tie";
+                break;
+            case this.poke1:
+                color = "poke1";
+                break;
+            case this.poke2:
+                color = "poke2";
+                break;
+            default:
+                color = "default-color";
+                break;
         }
 
         compareDiv.innerHTML = `
@@ -167,16 +154,26 @@ class Interaction {
     
         // COMPARE POKEMONS
         const properties = ["weight", "height", "hp", "attack", "defense", "special-attack", "special-defense", "speed"];
-    
+
+        let winner; 
+        
         properties.forEach(property => {
+
             if (poke1Stats[property] > poke2Stats[property]) {
-                CreateCharacter.compareStats(property, `${this.poke1.name} has higher ${property}`, poke1Stats);
+                winner = this.poke1; 
+                CreateCharacter.compareStats(property, `${this.poke1.name} has higher ${property}`, winner.name);
+                
+                console.log("Winner poke1:", winner.name);
 
             } else if (poke1Stats[property] < poke2Stats[property]) {
-                CreateCharacter.compareStats(property, `${this.poke2.name} has higher ${property}`, poke2Stats);
-                
+                winner = this.poke2; 
+                CreateCharacter.compareStats(property, `${this.poke2.name} has higher ${property}`, winner.name);
+                console.log("Winner poke2:", winner.name);
+
             } else {
-                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, null);
+                winner = null; 
+                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, winner.name);
+                console.log("Winner tie: ", winner.name); 
             }
         });
     }
@@ -209,9 +206,6 @@ selectFighterBtn.addEventListener("click", async () => {
         CreateCharacter.createCharacterDiv(pokemon1);
         CreateCharacter.createButton(); 
         CreateCharacter.createCharacterDiv(pokemon2);
-
-        console.log(pokemon1);
-        console.log(pokemon2);
 
     } catch (error) {
         console.error('Error:', error);
