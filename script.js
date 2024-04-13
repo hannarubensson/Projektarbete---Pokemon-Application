@@ -28,7 +28,6 @@ class PokemonCharacter {
 
 class CreateCharacter {
 
-
     static createCharacterDiv(character) {
 
         const { name, sprites, types, weight, height, stats } = character;
@@ -84,6 +83,16 @@ class CreateCharacter {
         compareBtn.innerHTML = `Compare Pokemons<br>
         <i class="fa fa-arrows-h" style="font-size:36px"></i>`; 
         wrapper.append(compareBtn); 
+
+        let fightBtn = document.createElement("button"); 
+        const fightwrapper = document.getElementById("fight"); 
+        fightBtn.setAttribute("id", "fight-pokemon-button");
+        fightBtn.innerHTML = `
+        <i class="fa fa-flash" style="font-size:36px"></i>
+        Fight Pokemon
+        <i class="fa fa-flash" style="font-size:36px"></i>
+        `
+        fightwrapper.append(fightBtn); 
         
     }
 
@@ -92,23 +101,17 @@ class CreateCharacter {
         const wrapper = document.getElementById("compare-wrapper");
         const compareDiv = document.createElement("div"); 
 
-        let color = "";
+        let color; 
+        console.log("winner name:", winner); 
 
         // STYLING FOR WINNER/LOSER/TIE
 
-        switch(winner.name) {
-            case null:
-                color = "tie";
-                break;
-            case this.poke1:
-                color = "poke1";
-                break;
-            case this.poke2:
-                color = "poke2";
-                break;
-            default:
-                color = "default-color";
-                break;
+        if (winner === null) {
+            color = "tie"; 
+        } else if (winner === this.poke1.name) { //.name funkar inte... borde jag inte importera någonstans ifrån? 
+            color = "poke1"; 
+        } else {
+            color = "poke2"; 
         }
 
         compareDiv.innerHTML = `
@@ -130,10 +133,12 @@ class Interaction {
     async getStats() {
 
         const poke1Stats = {
+            name: this.poke1.name,
             height: this.poke1.height,
             weight: this.poke1.weight
         };
         const poke2Stats = {
+            name: this.poke2.name,
             height: this.poke2.height,
             weight: this.poke2.weight
         };
@@ -149,33 +154,29 @@ class Interaction {
         return [poke1Stats, poke2Stats];
     }
 
-    async compareCharacters() {
+     async compareCharacters() {
         const [poke1Stats, poke2Stats] = await this.getStats();
     
         // COMPARE POKEMONS
         const properties = ["weight", "height", "hp", "attack", "defense", "special-attack", "special-defense", "speed"];
 
-        let winner; 
+        let winner = null;
         
         properties.forEach(property => {
 
             if (poke1Stats[property] > poke2Stats[property]) {
                 winner = this.poke1; 
                 CreateCharacter.compareStats(property, `${this.poke1.name} has higher ${property}`, winner.name);
-                
-                console.log("Winner poke1:", winner.name);
 
             } else if (poke1Stats[property] < poke2Stats[property]) {
                 winner = this.poke2; 
                 CreateCharacter.compareStats(property, `${this.poke2.name} has higher ${property}`, winner.name);
-                console.log("Winner poke2:", winner.name);
-
             } else {
-                winner = null; 
-                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, winner.name);
-                console.log("Winner tie: ", winner.name); 
+                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, winner);
             }
         });
+
+        return winner; 
     }
 
 
