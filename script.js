@@ -96,24 +96,14 @@ class CreateCharacter {
         
     }
 
-    static compareStats(property, results, winner) {
+    static compareStats(property, results, winner, color) {
 
         const wrapper = document.getElementById("compare-wrapper");
         const compareDiv = document.createElement("div"); 
 
-        let color; 
         console.log("winner name:", winner); 
 
         // STYLING FOR WINNER/LOSER/TIE
-
-        if (winner === null) {
-            color = "tie"; 
-        } else if (winner === this.poke1.name) { //.name funkar inte... borde jag inte importera någonstans ifrån? 
-            color = "poke1"; 
-        } else {
-            color = "poke2"; 
-        }
-
         compareDiv.innerHTML = `
         <h3 class="${color}">${property}: ${results}<br></h3>
         `
@@ -122,7 +112,24 @@ class CreateCharacter {
         return compareDiv; 
     }
 
+    static createFight(color, results) {
+
+        const wrapper = document.getElementById("fight"); 
+        const fightDiv = document.createElement("div");
+
+        fightDiv.innerHTML = `
+        <h3 class="${color}">${results}!
+        `
+        wrapper.append(fightDiv); 
+
+        return fightDiv; 
+
+
+    }
+
 }
+
+
 class Interaction {
 
     constructor(poke1, poke2) {
@@ -135,12 +142,14 @@ class Interaction {
         const poke1Stats = {
             name: this.poke1.name,
             height: this.poke1.height,
-            weight: this.poke1.weight
+            weight: this.poke1.weight,
+            moves: this.poke1.moves,
         };
         const poke2Stats = {
             name: this.poke2.name,
             height: this.poke2.height,
-            weight: this.poke2.weight
+            weight: this.poke2.weight,
+            moves: this.poke2.moves, 
         };
 
         this.poke1.stats.forEach(stat => {
@@ -154,6 +163,7 @@ class Interaction {
         return [poke1Stats, poke2Stats];
     }
 
+
      async compareCharacters() {
         const [poke1Stats, poke2Stats] = await this.getStats();
     
@@ -166,26 +176,68 @@ class Interaction {
 
             if (poke1Stats[property] > poke2Stats[property]) {
                 winner = this.poke1; 
-                CreateCharacter.compareStats(property, `${this.poke1.name} has higher ${property}`, winner.name);
+                CreateCharacter.compareStats(property, `${this.poke1.name} has higher ${property}`, winner.name, "poke1");
 
             } else if (poke1Stats[property] < poke2Stats[property]) {
                 winner = this.poke2; 
-                CreateCharacter.compareStats(property, `${this.poke2.name} has higher ${property}`, winner.name);
+                CreateCharacter.compareStats(property, `${this.poke2.name} has higher ${property}`, winner.name, "poke2");
             } else {
-                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, winner);
+                CreateCharacter.compareStats(property, `Both ${this.poke1.name} & ${this.poke2.name} have the same ${property}`, winner.name, "tie");
             }
         });
 
         return winner; 
     }
 
+    async startFight(poke1, poke2) {
+        const [poke1Stats, poke2Stats] = await this.getStats();
 
-    fight(poke1, poke2) {
+        console.log("poke1Stats:", poke1Stats); 
+        console.log("poke2Stats:", poke2Stats); 
+
+        const poke1FirstMove = await poke1Stats.moves[0].move.name;
+        const poke2FirstMove = await poke2Stats.moves[0].move.name;
+
+        console.log("Poke 1 moves:", poke1Stats.moves[0].move.name); // FUNKAR
+        console.log("Poke 2 moves:", poke2Stats.moves[0].move.name); // FUNKAR
+
+        if (poke1Stats.speed > poke2Stats.speed) {
+            this.fight(poke1, poke2, poke1FirstMove);
+        } else {
+            this.fight(poke2, poke1, poke2FirstMove);
+        }
+    }
+    
+    async fight(attacker, defender, moves) {
+
+        const [attackerStats, defenderStats] = await this.getStats(); 
+        const damage = (attackerStats.attack, defenderStats.defense, attackerStats, defenderStats);
+        
+        const message = `${attacker.name} hit ${defender.name} with ${moves} for ${damage} damage!` // DAMAGE FUNKAR INTE [OBJECT OBJECT]
+
+        CreateCharacter.createFight("fight1", message); 
 
 
     }
-    
+
+    static async calculateDamage(attack, defense, hpAttacker, hpDefender) {
+
+        const [attackerStats, defenderStats] = await this.getStats(); 
+
+        const damage = ((attack+special-attack)-(defense+special-defense)) * 0.8; 
+
+        if(damage > hpAttacker || damage > hpDefender) {
+            return `Was killed`; 
+        }
+
+        return damage; 
+
+    }
+
 }
+
+
+// EVENTLISTENERS ------------------------------------------------------------- // 
 
 let selectFighterBtn = document.getElementById("select-fighter"); 
 
@@ -235,6 +287,29 @@ selectFighterBtn.addEventListener("click", async () => {
             console.error('Error:', error);
         }
     });
+
+    let fightBtn = document.getElementById("fight-pokemon-button"); 
+
+    fightBtn.addEventListener("click", async () => {
+
+        console.log("klickat på fightbtn!"); 
+
+        try {
+
+            const [pokemon1, pokemon2] = await Promise.all([
+                PokemonCharacter.fetchPokeData(url1),
+                PokemonCharacter.fetchPokeData(url2)
+            ]);
+
+            const interaction = new Interaction(pokemon1, pokemon2); 
+            await interaction.startFight(pokemon1, pokemon2); 
+
+        } catch (error) {
+            console.log("Error:", error); 
+        }
+
+
+    })
 
 
 });
