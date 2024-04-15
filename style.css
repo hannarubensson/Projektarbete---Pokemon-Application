@@ -85,6 +85,14 @@ h2 {
 
 }
 
+#compare-wrapper {
+    background-color:  rgb(254, 240, 199);
+    border: 3px solid  rgba(255,0,199,1); 
+    border-radius: 10px;
+    text-align: center;
+    padding: 12px; 
+}
+
 
 /* BUTTONS */ 
 
@@ -128,7 +136,7 @@ h2 {
 /* STYLING FOR WINNER / LOSER / TIE */ 
 
 .poke1 {
-    color: green; 
+    color: rgba(255,0,199,1); 
 }
 
 .poke2 {
@@ -153,7 +161,7 @@ h2 {
     border-radius: 45px;
     border-radius: 45px;
     border: 3px solid  rgba(255,0,199,1); 
-    background-color: #FFEDED;
+    background-color:  rgb(254, 199, 242); 
     height: 80%; 
     padding: 40px; 
     display: flex;

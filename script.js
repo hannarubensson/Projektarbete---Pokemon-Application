@@ -100,7 +100,6 @@ class CreateCharacter {
 
         const wrapper = document.getElementById("compare-wrapper");
         const compareDiv = document.createElement("div"); 
-
         console.log("winner name:", winner); 
 
         // STYLING FOR WINNER/LOSER/TIE
@@ -109,6 +108,8 @@ class CreateCharacter {
         `
         wrapper.append(compareDiv);
 
+        showDiv(); 
+    
         return compareDiv; 
     }
 
@@ -124,8 +125,6 @@ class CreateCharacter {
         wrapper.append(fightDiv); 
 
         return fightDiv; 
-
-
     }
 
     static createDefense(color, results) {
@@ -261,9 +260,9 @@ class Interaction {
         const remainingHp = currentHp - damage;
 
         if (remainingHp <= 0) {
-            return `Was killed <i class=fa fa-frown-o" style="font-size:36px"></i>`;
+            return `Was killed <i class="fa fa-frown-o" style="font-size:36px"></i>`;
         }
-        
+
         return remainingHp; 
     }
 }
@@ -272,6 +271,10 @@ class Interaction {
 
 function showFight() {
     document.getElementById("fight").style.display = "flex";
+}
+
+function showDiv() {
+    document.getElementById("compare-wrapper").style.display = "block"; 
 }
 
 let selectFighterBtn = document.getElementById("select-fighter"); 
