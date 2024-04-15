@@ -120,10 +120,25 @@ class CreateCharacter {
         fightDiv.innerHTML = `
         <h3 class="${color}">${results}!
         `
+
         wrapper.append(fightDiv); 
 
         return fightDiv; 
 
+
+    }
+
+    static createDefense(color, results) {
+
+        const wrapper = document.getElementById("fight"); 
+        const fightDiv = document.createElement("div");
+
+        fightDiv.innerHTML = `
+        <h3 class="${color}">${results}!
+        `
+        wrapper.append(fightDiv); 
+
+        return fightDiv; 
 
     }
 
@@ -211,33 +226,53 @@ class Interaction {
     async fight(attacker, defender, moves) {
 
         const [attackerStats, defenderStats] = await this.getStats(); 
-        const damage = (attackerStats.attack, defenderStats.defense, attackerStats, defenderStats);
-        
-        const message = `${attacker.name} hit ${defender.name} with ${moves} for ${damage} damage!` // DAMAGE FUNKAR INTE [OBJECT OBJECT]
+        const damage = (attackerStats.attack, attackerStats["special-attack"], defenderStats.defense, defenderStats["special-defense"]);
 
-        CreateCharacter.createFight("fight1", message); 
+        console.log("AttackerStats:", attackerStats.attack, "Special-attack stats: ", attackerStats["special-attack"]); // FUNKAR
+        console.log("DefenderStats:", defenderStats.defense, "Special-defense stats: ", defenderStats["special-defense"]); // FUNKAR
+        
+        const hpAttacker = await Interaction.remainingHp(attackerStats.hp, 0); // 0 då attacker ej blev skadad
+        const hpDefender = await Interaction.remainingHp(defenderStats.hp, damage);
+
+        const message = `${attacker.name} hit ${defender.name} with ${moves} for ${damage} damage!`; // FUNKAR
+        const defenseMessage = `${defender.name} remaining HP: ${hpDefender}`;
+        const attackMessage = `${attacker.name} remaining HP: ${hpAttacker}`;  
+
+        CreateCharacter.createFight("attacker-color", message); // SKAPAR UPP FÄRG FÖR ATTACK
+        CreateCharacter.createDefense("defense-color", defenseMessage);
+        CreateCharacter.createFight("attacker-color", attackMessage);
 
 
     }
 
-    static async calculateDamage(attack, defense, hpAttacker, hpDefender) {
+    static async calculateDamage(attack, specialAttack, defense, specialDefense) {
 
-        const [attackerStats, defenderStats] = await this.getStats(); 
+        const totalAttack = parseInt(attack + specialAttack);
+        const totalDefense = parseInt(defense + specialDefense);
 
-        const damage = ((attack+special-attack)-(defense+special-defense)) * 0.8; 
-
-        if(damage > hpAttacker || damage > hpDefender) {
-            return `Was killed`; 
-        }
-
+        const damage = (totalAttack - totalDefense)*0.8; 
+        
         return damage; 
 
     }
 
+    static async remainingHp(currentHp, damage) {
+        
+        const remainingHp = currentHp - damage;
+
+        if (remainingHp <= 0) {
+            return `Was killed <i class=fa fa-frown-o" style="font-size:36px"></i>`;
+        }
+        
+        return remainingHp; 
+    }
 }
 
-
 // EVENTLISTENERS ------------------------------------------------------------- // 
+
+function showFight() {
+    document.getElementById("fight").style.display = "flex";
+}
 
 let selectFighterBtn = document.getElementById("select-fighter"); 
 
@@ -264,6 +299,8 @@ selectFighterBtn.addEventListener("click", async () => {
         console.error('Error:', error);
     }
 
+    
+    showFight(); 
 
     let compareBtn = document.getElementById("compare-pokemon-button"); 
 
