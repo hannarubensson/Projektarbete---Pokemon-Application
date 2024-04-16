@@ -38,13 +38,12 @@ class CreateCharacter {
         let statsList = ""; 
         const defaultPic = sprites.front_default;
         
-        
-        // ITERERA GENOM ARRAY
+        // TYPE ITERATION
         types.forEach(type => {
             typesList += `<h3><u>Type:</u> ${type.type.name}</h3>`;
         });
 
-        // ITERERA GENOM BILDERNA I OBJEKTET
+        // DEFAULT PIC ITERATION 
         for (const key in sprites) {
             if (sprites.hasOwnProperty(key)) {
                 if (key === 'front_default' && defaultPic) {
@@ -53,6 +52,7 @@ class CreateCharacter {
             }
         }
 
+        // STATS ITERATION
         stats.forEach(stat => {
             statsList += `<h3><u>${stat.stat.name}:</u> ${stat.base_stat}</h3>`;
         });
@@ -110,7 +110,6 @@ class CreateCharacter {
         wrapper.append(compareDiv);
 
         showDiv(); 
-    
         return compareDiv; 
     }
 
@@ -124,7 +123,6 @@ class CreateCharacter {
         `
 
         wrapper.append(fightDiv); 
-
         return fightDiv; 
     }
 
@@ -137,13 +135,10 @@ class CreateCharacter {
         <h3 class="${color}">${results}!
         `
         wrapper.append(fightDiv); 
-
         return fightDiv; 
 
     }
-
 }
-
 
 class Interaction {
 
@@ -202,44 +197,6 @@ class Interaction {
         });
     }
 
-    async startFight(poke1, poke2) {
-        const [poke1Stats, poke2Stats] = await this.getStats();
-
-        console.log("poke1Stats:", poke1Stats); 
-        console.log("poke2Stats:", poke2Stats); 
-
-        const poke1FirstMove = await poke1Stats.moves[0].move.name;
-        const poke2FirstMove = await poke2Stats.moves[0].move.name;
-
-        console.log("Poke 1 moves:", poke1Stats.moves[0].move.name); // FUNKAR
-        console.log("Poke 2 moves:", poke2Stats.moves[0].move.name); // FUNKAR
-
-        if (poke1Stats.speed > poke2Stats.speed) {
-            this.fight(poke1, poke2, poke1FirstMove);
-        } else {
-            this.fight(poke2, poke1, poke2FirstMove);
-        }
-    }
-    
-    async fight(attacker, defender, moves) {
-
-        const [attackerStats, defenderStats] = await this.getStats(); 
-        const damage = Interaction.calculateDamage(attackerStats.attack, attackerStats["special-attack"], defenderStats.defense, defenderStats["special-defense"]);
-        
-        const hpAttacker = await Interaction.remainingHp(attackerStats.hp, 0); // 0 då attacker ej blev skadad
-        const hpDefender = await Interaction.remainingHp(defenderStats.hp, damage);
-
-        const message = `${attacker.name} hit ${defender.name} with ${moves} for ${damage} damage!`;
-        const defenseMessage = `${defender.name} remaining HP: ${hpDefender}`;
-        const attackMessage = `${attacker.name} remaining HP: ${hpAttacker}`;  
-
-        CreateCharacter.createFight("attacker-color", message); // SKAPAR UPP FÄRG FÖR ATTACK
-        CreateCharacter.createDefense("defense-color", defenseMessage);
-        CreateCharacter.createFight("attacker-color", attackMessage);
-
-
-    }
-
     async runFight(attacker, defender) {
 
         const [attackerStats, defenderStats] = await this.getStats(); 
@@ -247,7 +204,7 @@ class Interaction {
         let defenderHp = defenderStats.hp; 
         let isAttackersTurn = attackerStats.speed > defenderStats.speed; 
 
-        const attackerCurrentMove = await attackerStats.moves[0].move.name; //ÄNDRA VARIABELNAMN .............
+        const attackerCurrentMove = await attackerStats.moves[0].move.name; 
         const defenderCurrentMove = await defenderStats.moves[0].move.name;
 
         for (let i=0; i<1000; i++) {
@@ -267,12 +224,12 @@ class Interaction {
                 if(defenderHp <= 0) {
 
                     const message = `${defender.name} died`;
-                    CreateCharacter.createFight("defender-color", message);
+                    CreateCharacter.createFight("defense-color", message);
                     break; 
                 }
 
             } else {
-            // DEFENDER ATTACKERAR ATTACKER
+            
                 const currentDamage = Interaction.calculateDamage(
                     defenderStats.attack, 
                     defenderStats["special-attack"], 
@@ -282,18 +239,18 @@ class Interaction {
                 attackerHp -= currentDamage;
 
                 const message = `${defender.name} hit ${attacker.name} with ${defenderCurrentMove} for ${currentDamage} damage!`;
-                CreateCharacter.createFight("defender-color", message);
+                CreateCharacter.createFight("defense-color", message);
 
                 if(attackerHp <= 0) {
-
-                    const message = `${attacker.name} died`;
+                    const message = `${attacker.name} died!`;
                     CreateCharacter.createFight("attacker-color", message);
                     break; 
                 }
 
             } 
                 
-            isAttackersTurn = !isAttackersTurn; // TOGGLAR MELLAN LÄGEN ATTACKERSTURN
+            isAttackersTurn = !isAttackersTurn; // TOGGLES BETWEEN ATTACKER'S AND DEFENDER'S TURN
+
             await Interaction.sleep(1000); 
             
         }
@@ -322,17 +279,6 @@ class Interaction {
         
         return damage; 
 
-    }
-
-    static async remainingHp(currentHp, damage) {
-        
-        const remainingHp = currentHp - damage;
-
-        if (remainingHp <= 0) {
-            return `Was killed <i class="fa fa-frown-o" style="font-size:36px"></i>`;
-        }
-
-        return remainingHp; 
     }
 }
 
@@ -396,9 +342,8 @@ selectFighterBtn.addEventListener("click", async () => {
 
     let fightBtn = document.getElementById("fight-pokemon-button"); 
 
+    // BUTTON FOR FIGHTING POKEMON ------------------------------------
     fightBtn.addEventListener("click", async () => {
-
-        console.log("klickat på fightbtn!"); 
 
         try {
 
