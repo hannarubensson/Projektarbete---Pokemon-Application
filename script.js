@@ -221,9 +221,10 @@ class Interaction {
 
                 const message = `${attacker.name} hit ${defender.name} with ${attackerCurrentMove} for ${currentDamage} damage!`;
                 CreateCharacter.createFight("attacker-color", message);
+
                 if(defenderHp <= 0) {
 
-                    const message = `${defender.name} died`;
+                    const message = `${defender.name} died, ${attacker.name} wins!`;
                     CreateCharacter.createFight("defense-color", message);
                     break; 
                 }
@@ -242,7 +243,7 @@ class Interaction {
                 CreateCharacter.createFight("defense-color", message);
 
                 if(attackerHp <= 0) {
-                    const message = `${attacker.name} died!`;
+                    const message = `${attacker.name} died, ${defender.name} wins!`;
                     CreateCharacter.createFight("attacker-color", message);
                     break; 
                 }
@@ -359,8 +360,6 @@ selectFighterBtn.addEventListener("click", async () => {
             console.log("Error:", error); 
         }
 
-
     })
-
 
 });
